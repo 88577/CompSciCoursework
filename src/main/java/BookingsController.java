@@ -3,11 +3,11 @@ import java.sql.ResultSet;
 
 public class BookingsController {
 
-        public static void insertBookings(int bookingID, String bookingType, String description, int slots){
+        public static void insertBookings(int bookingID, int bookingType, String description, int slots){
             try{
                 PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Bookings (bookingID, bookingType, description, slots) VALUES (?, ?, ?, ?)");
                 ps.setInt(1, bookingID);
-                ps.setString(2, bookingType);
+                ps.setInt(2, bookingType);
                 ps.setString(3, description);
                 ps.setInt(4, slots);
                 ps.executeUpdate();
@@ -23,7 +23,7 @@ public class BookingsController {
                 ResultSet results = ps.executeQuery();
                 while (results.next()){
                     int bookingID = results.getInt(1);
-                    String bookingType = results.getString(2);
+                    int bookingType = results.getInt(2);
                     String description = results.getString(3);
                     int slots = results.getInt(4);
                     System.out.println(bookingID + " " + bookingType + " " + description + " " + slots);
@@ -41,10 +41,10 @@ public class BookingsController {
                 System.out.println("Error" + e.getMessage());
             }
         }
-        public static void updateBookings(int bookingID, String bookingType, String description, int slots){
+        public static void updateBookings(int bookingID, int bookingType, String description, int slots){
             try{
                 PreparedStatement ps = Main.db.prepareStatement("UPDATE Bookings SET bookingType = ?, description = ?, slots = ? WHERE bookingID = ?");
-                ps.setString(1, bookingType);
+                ps.setInt(1, bookingType);
                 ps.setString(2, description);
                 ps.setInt(3,slots);
                 ps.setInt(4, bookingID);

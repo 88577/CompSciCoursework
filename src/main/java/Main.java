@@ -11,22 +11,15 @@ public class Main {
         Scanner input = new Scanner(System.in);
         openDatabase("courseworkDatabase.db");
         // Opening connection to Database
-
         System.out.println("userID");
         int userID = input.nextInt();
-        System.out.println("firstName");
-        input.nextLine();
-        String firstName = input.nextLine();
-        System.out.println("lastName");
-        String lastName = input.nextLine();
-        System.out.println("password");
-        String password = input.nextLine();
-        System.out.println("email");
-        String email = input.nextLine();
-        System.out.println("admin");
-        boolean admin = input.nextBoolean();
-        UsersController.updateUser(userID, firstName, lastName, password, email, admin);
-        UsersController.listUsers();
+        PersonalBookingsController.listUserBookings(userID);
+
+        System.out.println("bookingID");
+        int bookingID = input.nextInt();
+        PersonalBookingsController.listBookingsUsers(bookingID);
+
+        BookingsController.listBookings();
 
         closeDatabase();
     }
