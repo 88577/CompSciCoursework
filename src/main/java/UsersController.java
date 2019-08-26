@@ -44,7 +44,7 @@ public class UsersController{
                 System.out.println(e.getMessage());
             }
         }
-        public static void updateUser(String firstName, String lastName, String password, String email, boolean admin, int userID){
+        public static void updateUser(int userID, String firstName, String lastName, String password, String email, boolean admin){
             try {
                 PreparedStatement ps = Main.db.prepareStatement("UPDATE Users SET firstName = ?, lastName = ?, password = ?, email = ?, admin = ? WHERE userID = ?");
                 ps.setString(1, firstName);

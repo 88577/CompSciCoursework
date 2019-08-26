@@ -25,7 +25,7 @@ public class Main {
         String email = input.nextLine();
         System.out.println("admin");
         boolean admin = input.nextBoolean();
-        UsersController.insertUsers(userID, firstName, lastName, password, email, admin);
+        UsersController.updateUser(userID, firstName, lastName, password, email, admin);
         UsersController.listUsers();
 
         closeDatabase();
