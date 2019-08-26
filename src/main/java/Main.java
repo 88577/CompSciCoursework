@@ -1,6 +1,7 @@
 import org.sqlite.SQLiteConfig;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Main {
@@ -11,16 +12,9 @@ public class Main {
         Scanner input = new Scanner(System.in);
         openDatabase("courseworkDatabase.db");
         // Opening connection to Database
-        System.out.println("userID");
-        int userID = input.nextInt();
-        PersonalBookingsController.listUserBookings(userID);
-
-        System.out.println("bookingID");
-        int bookingID = input.nextInt();
-        PersonalBookingsController.listBookingsUsers(bookingID);
-
-        BookingsController.listBookings();
-
+        System.out.println("day");
+        String day = input.nextLine();
+        ScheduleController.listDaysBookings(day);
         closeDatabase();
     }
 
