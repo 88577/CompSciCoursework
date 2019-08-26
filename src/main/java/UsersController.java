@@ -1,6 +1,6 @@
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-public class UsersController {
+public class UsersController{
 
         public static void insertUsers(int UserID, String firstName, String lastName, String password, String email, boolean admin) {
             try{
