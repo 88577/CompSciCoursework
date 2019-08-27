@@ -2,15 +2,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 public class UsersController{
 
-        public static void insertUsers(int UserID, String firstName, String lastName, String password, String email, boolean admin) {
+        public static void insertUsers(String firstName, String lastName, String password, String email, boolean admin) {
             try{
-                PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Users (UserID, firstName, lastName, password, email, admin) values (?, ?, ?, ?, ?, ?)");
-                ps.setInt(1, UserID);
-                ps.setString(2, firstName);
-                ps.setString(3, lastName);
-                ps.setString(4, password);
-                ps.setString(5, email);
-                ps.setBoolean(6, admin);
+                PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Users (firstName, lastName, password, email, admin) values (?, ?, ?, ?, ?)");
+                ps.setString(1, firstName);
+                ps.setString(2, lastName);
+                ps.setString(3, password);
+                ps.setString(4, email);
+                ps.setBoolean(5, admin);
                 ps.executeUpdate();
                 System.out.println("Records successfully added");
             }   catch (Exception exception){
@@ -37,7 +36,7 @@ public class UsersController{
         }
         public static void deleteUser(int userID){
             try {
-                PreparedStatement ps = Main.db.prepareStatement("DELETE FROM Users WHERE UserID = ?");
+                PreparedStatement ps = Main.db.prepareStatement("DELETE FROM Users WHERE userID = ?");
                 ps.setInt(1, userID);
                 ps.executeUpdate();
             } catch (Exception e){

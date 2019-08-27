@@ -12,9 +12,10 @@ public class Main {
         Scanner input = new Scanner(System.in);
         openDatabase("courseworkDatabase.db");
         // Opening connection to Database
-        System.out.println("day");
-        String day = input.nextLine();
-        ScheduleController.listDaysBookings(day);
+
+        ScheduleController.listTimesBooking("1", 12);
+        ScheduleController.listAllBookings();
+
         closeDatabase();
     }
 

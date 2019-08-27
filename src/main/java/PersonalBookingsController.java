@@ -45,4 +45,16 @@ public class PersonalBookingsController {
             System.out.println("Error " + e.getMessage());
         }
     }
+    public static void insertUserBooking(int userID, int bookingID){
+        try {
+            PreparedStatement ps = Main.db.prepareStatement("INSERT INTO personalBookings (userID, bookingID) values (?, ?)");
+            ps.setInt(1, userID);
+            ps.setInt(2, bookingID);
+            ps.executeUpdate();
+            System.out.println("Records successfully added");
+        }catch (Exception e){
+            System.out.println("Error " + e.getMessage());
+        }
+
+    }
 }

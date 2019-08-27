@@ -3,13 +3,12 @@ import java.sql.ResultSet;
 
 public class BookingsController {
 
-        public static void insertBookings(int bookingID, int bookingType, String description, int slots){
+        public static void insertBookings(int bookingType, String description, int slots){
             try{
-                PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Bookings (bookingID, bookingType, description, slots) VALUES (?, ?, ?, ?)");
-                ps.setInt(1, bookingID);
-                ps.setInt(2, bookingType);
-                ps.setString(3, description);
-                ps.setInt(4, slots);
+                PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Bookings (bookingType, description, slots) VALUES (?, ?, ?)");
+                ps.setInt(1, bookingType);
+                ps.setString(2, description);
+                ps.setInt(3, slots);
                 ps.executeUpdate();
                 System.out.println("Records successfully added");
             }catch (Exception e){

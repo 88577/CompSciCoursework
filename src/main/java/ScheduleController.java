@@ -31,4 +31,32 @@ public class ScheduleController {
                 System.out.println("Error " + e.getMessage());
             }
         }
+        public static void listTimesBooking(String day, int time){
+            try {
+                PreparedStatement ps = Main.db.prepareStatement("SELECT bookingID FROM Schedule WHERE day = ? AND time = ?");
+                ps.setString(1, day);
+                ps.setInt(2, time);
+                ResultSet results = ps.executeQuery();
+                while (results.next()){
+                    int bookingID = results.getInt(1);
+                    System.out.println(bookingID);
+                }
+            }catch (Exception e){
+                System.out.println("Error " + e.getMessage());
+            }
+        }
+        public static void listAllBookings(){
+            try {
+                PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Schedule");
+                ResultSet results = ps.executeQuery();
+                while (results.next()){
+                    int bookingID = results.getInt(1);
+                    String day = results.getString(2);
+                    int time = results.getInt(3);
+                    System.out.println(bookingID + " " + day + " " + time);
+                }
+            }catch (Exception e){
+                System.out.println("Error " + e.getMessage());
+            }
+        }
 }
