@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class PersonalBookingsController {
-    public static void listAllUserBookings(){
+    public static void ListAllUserBookings(){
         try {
             PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM personalBookings");
             ResultSet results = ps.executeQuery();
