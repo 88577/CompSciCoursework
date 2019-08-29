@@ -3,7 +3,7 @@ import java.sql.ResultSet;
 
 public class BookingsController {
 
-        public static void insertBookings(int bookingType, String description, int slots){
+        public static void InsertBookings(int bookingType, String description, int slots){
             try{
                 PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Bookings (bookingType, description, slots) VALUES (?, ?, ?)");
                 ps.setInt(1, bookingType);
@@ -16,7 +16,7 @@ public class BookingsController {
             }
     }
 
-        public static void listBookings(){
+        public static void ListAllBookings(){
             try {
                 PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Bookings");
                 ResultSet results = ps.executeQuery();
@@ -31,7 +31,23 @@ public class BookingsController {
                 System.out.println("Error" + e.getMessage());
             }
         }
-        public static void deleteBookings(int bookingID){
+    public static void ListBookings(int bookingID){
+        try {
+            PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Bookings WHERE bookingID = ?");
+            ps.setInt(1, bookingID);
+            ResultSet results = ps.executeQuery();
+            while (results.next()){
+                int bookingsID = results.getInt(1);
+                int bookingType = results.getInt(2);
+                String description = results.getString(3);
+                int slots = results.getInt(4);
+                System.out.println(bookingsID + " " + bookingType + " " + description + " " + slots);
+            }
+        }catch (Exception e){
+            System.out.println("Error" + e.getMessage());
+        }
+    }
+        public static void DeleteBookings(int bookingID){
             try {
                 PreparedStatement ps = Main.db.prepareStatement("DELETE FROM Bookings WHERE bookingID = ?");
                 ps.setInt(1, bookingID);
@@ -40,7 +56,7 @@ public class BookingsController {
                 System.out.println("Error" + e.getMessage());
             }
         }
-        public static void updateBookings(int bookingID, int bookingType, String description, int slots){
+        public static void UpdateBookings(int bookingID, int bookingType, String description, int slots){
             try{
                 PreparedStatement ps = Main.db.prepareStatement("UPDATE Bookings SET bookingType = ?, description = ?, slots = ? WHERE bookingID = ?");
                 ps.setInt(1, bookingType);

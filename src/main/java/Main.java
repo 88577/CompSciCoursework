@@ -12,10 +12,7 @@ public class Main {
         Scanner input = new Scanner(System.in);
         openDatabase("courseworkDatabase.db");
         // Opening connection to Database
-
-        ScheduleController.listTimesBooking("1", 12);
-        ScheduleController.listAllBookings();
-
+        ScheduleController.InsertBookingTiming(2, "03/01/2019", 16);
         closeDatabase();
     }
 
