@@ -2,7 +2,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 public class UsersController{
 
+        public static void UserCheck(){
+            // Selects every email and password to compare with user's login details
+            try{
+                PreparedStatement ps = Main.db.prepareStatement("SELECT (email, password) FROM Users");
+                ResultSet results = ps.executeQuery();
+                while (results.next()) {
+                    String email = results.getString(1);
+                    String password = results.getString(2);
+                    System.out.println(email + " " + password);
+                }
+                } catch (Exception exception){
+                    System.out.println("Error: " + exception.getMessage());
+                }
+            }
         public static void InsertUsers(String firstName, String lastName, String password, String email, boolean admin) {
+            // Inserts all new user data into the table Users
             try{
                 PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Users (firstName, lastName, password, email, admin) values (?, ?, ?, ?, ?)");
                 ps.setString(1, firstName);
@@ -17,8 +32,9 @@ public class UsersController{
             }
         }
         public static void ListAllUsers(){
+            // Selects all users for use by admin
             try{
-                PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Users");
+                PreparedStatement ps = Main.db.prepareStatement("SELECT (userID, firstName, lastName, password, email, admin) FROM Users");
                 ResultSet results = ps.executeQuery();
                 while(results.next()){
                     int userID = results.getInt(1);
@@ -35,7 +51,7 @@ public class UsersController{
         }
     public static void ListUsers(int userID){
         try{
-            PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Users WHERE userID = ?");
+            PreparedStatement ps = Main.db.prepareStatement("SELECT (userID, firstName, lastName, password, email, admin) FROM Users WHERE userID = ?");
             ps.setInt(1, userID);
             ResultSet results = ps.executeQuery();
             while(results.next()){

@@ -12,7 +12,9 @@ public class Main {
         Scanner input = new Scanner(System.in);
         openDatabase("courseworkDatabase.db");
         // Opening connection to Database
-        ScheduleController.InsertBookingTiming(2, "03/01/2019", 16);
+
+        UsersController.ListAllUsers();
+
         closeDatabase();
     }
 
