@@ -34,7 +34,7 @@ public class UsersController{
         public static void ListAllUsers(){
             // Selects all users for use by admin
             try{
-                PreparedStatement ps = Main.db.prepareStatement("SELECT (userID, firstName, lastName, password, email, admin) FROM Users");
+                PreparedStatement ps = Main.db.prepareStatement("SELECT userID, firstName, lastName, password, email, admin FROM Users");
                 ResultSet results = ps.executeQuery();
                 while(results.next()){
                     int userID = results.getInt(1);
