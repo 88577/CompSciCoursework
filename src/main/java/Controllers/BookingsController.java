@@ -18,7 +18,7 @@ public class BookingsController {
             }catch (Exception e){
                 System.out.println("Error" + e.getMessage());
             }
-    }
+        }
 
         public static void ListAllBookings(){
             try {
