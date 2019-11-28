@@ -12,21 +12,28 @@ import java.sql.ResultSet;
 @Path("UserController/")
 public class UsersController{
         @POST
+        // Inserting data
         @Path("InsertUser")
+        // Defines the API path for method
         @Consumes(MediaType.MULTIPART_FORM_DATA)
         @Produces(MediaType.APPLICATION_JSON)
         public String InsertUser(
+                // Inserts a new user into the database
                 @FormDataParam("userID") Integer userID,
                 @FormDataParam("firstName") String firstName,
                 @FormDataParam("lastName") String lastName,
                 @FormDataParam("password") String password,
                 @FormDataParam("email") String email,
-                @FormDataParam("admin") Boolean admin) {
+                @FormDataParam("admin") Boolean admin)
+                // Retrieves all form data inputted by user
+                {
             try{
                 if(userID == null || firstName == null || lastName == null || password == null || email == null || admin == null){
+                    // Check that no value is null
                     throw new Exception("One or more form data parameters are missing from the HTTP request");
                 }
                 System.out.println("InsertUser/new userID=" + userID);
+                // Output to console to monitor API call
 
                 PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Users (userID, firstName, lastName, password, email, admin) values (?, ?, ?, ?, ?, ?)");
 
@@ -45,16 +52,22 @@ public class UsersController{
             }
         }
         @GET
+        // Retrieving data
         @Path("ListAllUsers")
+        // Defines the API path for method
         @Produces(MediaType.APPLICATION_JSON)
         public String ListAllUsers(){
+            // Lists all users, and corresponding user details from Users table
             System.out.println("UserController/ListAllUsers");
+            // Output to console to monitor API call
             JSONArray list = new JSONArray();
+            // Instantiates a JSON array to hold JSON objects for each user
             try{
                 PreparedStatement ps = Main.db.prepareStatement("SELECT userID, firstName, lastName, password, email, admin FROM Users");
                 ResultSet results = ps.executeQuery();
                 while(results.next()){
                     JSONObject item = new JSONObject();
+                    // Instantiates a JSON object to hold attributes for one user
                     item.put("userID", results.getInt(1));
                     item.put("firstName", results.getString(2));
                     item.put("lastName", results.getString(3));
@@ -62,7 +75,7 @@ public class UsersController{
                     item.put("email", results.getString(5));
                     item.put("admin", results.getBoolean(6));
                     list.add(item);
-                    //test
+                    // Puts all values into JSON object
                 }
                 return list.toString();
             }   catch (Exception exception){
@@ -71,14 +84,20 @@ public class UsersController{
             }
         }
         @GET
+        // Retrieving data
         @Path("ListUser/{userID}")
+        // Defines the API path for method
         @Produces(MediaType.APPLICATION_JSON)
         public String ListUser(@PathParam("userID") Integer userID) throws Exception {
+            // Lists all user details for one specific user
             if(userID == null){
+                // Check for whether userID exists
                 throw new Exception("User ID is missing from HTTP request");
             }
             System.out.println("UserController/ListUser" + userID);
+            // Output to console to monitor API call
             JSONObject item = new JSONObject();
+            // Instantiates a JSON object to hold user's attributes
             try{
                 PreparedStatement ps = Main.db.prepareStatement("SELECT firstName, lastName, password, email, admin FROM Users WHERE userID = ?");
                 ps.setInt(1, userID);
@@ -90,27 +109,33 @@ public class UsersController{
                     item.put("password", results.getString(3));
                     item.put("email", results.getString(4));
                     item.put("admin", results.getBoolean(5));
+                    // Puts all values into JSON object
                 }
                 return item.toString();
+                // Returns values as a String
             }   catch (Exception exception){
                 System.out.println("Database error " + exception.getMessage());
                 return "{\"error\": \"Unable to get item, please see server console for more info.\"}";
             }
         }
         @POST
+        // Changing data in the database
         @Path("DeleteUser")
+        // Defines the API path for method
         @Consumes(MediaType.MULTIPART_FORM_DATA)
         @Produces(MediaType.APPLICATION_JSON)
         public String DeleteUser(@FormDataParam("userID") Integer userID){
+            // Deletes a user from the Users table
             try {
                 if(userID == null){
+                    // Check if the userID is null
                     throw new Exception("One or more form data parameters are missing in the HTTP request");
                 }
                 System.out.println("UserController/DeleteUser userID=" + userID);
 
-                //PreparedStatement ps1 = Main.db.prepareStatement("DELETE FROM personalBookings WHERE userID = ?");
-                //ps1.setInt(1, userID);
-                //ps1.execute();
+                PreparedStatement ps1 = Main.db.prepareStatement("DELETE FROM personalBookings WHERE userID = ?");
+                ps1.setInt(1, userID);
+                ps1.execute();
                 PreparedStatement ps2 = Main.db.prepareStatement("DELETE FROM Users WHERE userID = ?");
                 ps2.setInt(1, userID);
                 ps2.execute();
