@@ -9,8 +9,104 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.UUID;
+
 @Path("UserController/")
 public class UsersController{
+
+    @POST
+    @Path("login")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String loginUser(@FormDataParam("email") String email, @FormDataParam("password") String password) {
+
+        try {
+
+            System.out.println("UserController/login");
+
+            PreparedStatement ps1 = Main.db.prepareStatement("SELECT password FROM Users WHERE email = ?");
+            ps1.setString(1, email);
+            ResultSet loginResults = ps1.executeQuery();
+            if (loginResults.next()) {
+
+                String correctPassword = loginResults.getString(1);
+                if (password.equals(correctPassword)) {
+
+                    String token = UUID.randomUUID().toString();
+
+                    PreparedStatement ps2 = Main.db.prepareStatement("UPDATE Users SET token = ? WHERE email = ?");
+                    ps2.setString(1, token);
+                    ps2.setString(2, email);
+                    ps2.executeUpdate();
+
+                    JSONObject userDetails = new JSONObject();
+                    userDetails.put("email", email);
+                    userDetails.put("token", token);
+                    return userDetails.toString();
+
+                } else {
+                    return "{\"error\": \"Incorrect password!\"}";
+                }
+
+            } else {
+                return "{\"error\": \"Unknown user!\"}";
+            }
+
+        } catch (Exception exception){
+            System.out.println("Database error during /UserController/login: " + exception.getMessage());
+            return "{\"error\": \"Server side error!\"}";
+        }
+    }
+    @POST
+    @Path("logout")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String logoutUser(@CookieParam("token") String token) {
+
+        try {
+
+            System.out.println("UserController/logout");
+
+            PreparedStatement ps1 = Main.db.prepareStatement("SELECT userID FROM Users WHERE token = ?");
+            ps1.setString(1, token);
+            ResultSet logoutResults = ps1.executeQuery();
+            if (logoutResults.next()) {
+
+                int id = logoutResults.getInt(1);
+
+                PreparedStatement ps2 = Main.db.prepareStatement("UPDATE Users SET token = NULL WHERE userID = ?");
+                ps2.setInt(1, id);
+                ps2.executeUpdate();
+
+                return "{\"status\": \"OK\"}";
+            } else {
+
+                return "{\"error\": \"Invalid token!\"}";
+
+            }
+
+        } catch (Exception exception){
+            System.out.println("Database error during /UserController/logout: " + exception.getMessage());
+            return "{\"error\": \"Server side error!\"}";
+        }
+
+    }
+
+    public static boolean validToken(String token) {
+        try {
+            PreparedStatement ps = Main.db.prepareStatement("SELECT userID FROM Users WHERE token = ?");
+            ps.setString(1, token);
+            ResultSet logoutResults = ps.executeQuery();
+            return logoutResults.next();
+        } catch (Exception exception) {
+            System.out.println("Database error during /UserController/logout: " + exception.getMessage());
+            return false;
+        }
+    }
+
+
+
+
         @POST
         // Inserting data
         @Path("InsertUser")
@@ -24,9 +120,13 @@ public class UsersController{
                 @FormDataParam("lastName") String lastName,
                 @FormDataParam("password") String password,
                 @FormDataParam("email") String email,
-                @FormDataParam("admin") Boolean admin)
+                @FormDataParam("admin") Boolean admin,
+                @CookieParam("token") String token)
                 // Retrieves all form data inputted by user
                 {
+                    if(!UsersController.validToken(token)){
+                        return "{\"error\": \"You don't appear to be logged in.\"}";
+                    }
             try{
                 if(userID == null || firstName == null || lastName == null || password == null || email == null || admin == null){
                     // Check that no value is null
@@ -51,6 +151,7 @@ public class UsersController{
                 return "{\"error\": \"Unable to create new item, please see server console for more info.\"}";
             }
         }
+
         @GET
         // Retrieving data
         @Path("ListAllUsers")
@@ -124,7 +225,11 @@ public class UsersController{
         // Defines the API path for method
         @Consumes(MediaType.MULTIPART_FORM_DATA)
         @Produces(MediaType.APPLICATION_JSON)
-        public String DeleteUser(@FormDataParam("userID") Integer userID){
+        public String DeleteUser(@FormDataParam("userID") Integer userID,
+                                 @CookieParam("token") String token){
+            if (!UsersController.validToken(token)) {
+                return "{\"error\": \"You don't appear to be logged in.\"}";
+            }
             // Deletes a user from the Users table
             try {
                 if(userID == null){
@@ -156,7 +261,12 @@ public class UsersController{
                 @FormDataParam("lastName") String lastName,
                 @FormDataParam("password") String password,
                 @FormDataParam("email") String email,
-                @FormDataParam("admin") Boolean admin) {
+                @FormDataParam("admin") Boolean admin,
+                @CookieParam("token") String token) {
+
+            if (!UsersController.validToken(token)) {
+                return "{\"error\": \"You don't appear to be logged in.\"}";
+            }
             try {
                 if(userID == null || firstName == null || lastName == null || password == null || email == null || admin == null){
                     throw new Exception("One or more form data parameters are missing in the HTTP request");
