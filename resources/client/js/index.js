@@ -2,13 +2,19 @@ function pageLoad() {
 
     let now = new Date();
 
-    let myHTML = '<div style="text-align:center;">'
-        + '<h1>Welcome to my API powered website!</h1>'
-        + '<img src="/client/img/Apple.jpg"  alt="Logo"/>'
-        + '<div style="font-style: italic;">'
-        + 'Generated at ' + now.toLocaleTimeString()
-        + '</div>'
-        + '</div>';
+    let myHTML = '<table>'
+        + '<tr>'
+        + '<th>Court 1</th>'
+        + '<th>Court 2</th>'
+        + '<th>Court 3</th>';
+
+    fetch('/ScheduleController/ListAllBookings', {method:'get'}
+    ).then(response => response.json()
+    ).then(bookings => {
+        for(let i = 1; i < 19; i++) {
+
+        }
+    })
 
     document.getElementById("testDiv").innerHTML = myHTML;
 
@@ -45,9 +51,13 @@ function checkLogin() {
             button.style.visibility = "visible";
         }
 
+        checkLogin();
+
         logInHTML = "Logged in as " + username + ". <a href='/client/login.html?logout'>Log out</a>";
 
     }
+
+
 
     document.getElementById("loggedInDetails").innerHTML = logInHTML;
 

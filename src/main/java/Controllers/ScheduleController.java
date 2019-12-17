@@ -1,11 +1,20 @@
 package Controllers;
 
 import Server.Main;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.UUID;
+
+@Path("ScheduleController/")
 
 public class ScheduleController {
+
         public static void InsertBookingTiming(int bookingID, String day, int time){
             try {
                 boolean running = true;
@@ -54,18 +63,27 @@ public class ScheduleController {
                 System.out.println("Error " + e.getMessage());
             }
         }
-        public static void ListDaysBookings(String day){
+
+        @POST
+        @Path("ListDaysBookings/{day}")
+        @Produces(MediaType.APPLICATION_JSON)
+
+        public static String ListDaysBookings(@PathParam("day") String day) throws Exception{
+
+            JSONObject item = new JSONObject();
+
             try {
                 PreparedStatement ps = Main.db.prepareStatement("SELECT bookingID, time FROM Schedule WHERE day = ?");
                 ps.setString(1, day);
                 ResultSet results = ps.executeQuery();
                 while(results.next()){
-                    int bookingID = results.getInt(1);
-                    int time = results.getInt(2);
-                    System.out.println(bookingID + " " + time);
+                    item.put("bookingID", results.getInt(1));
+                    item.put("time", results.getInt(2));
                 }
+                return item.toString();
             }catch (Exception e){
-                System.out.println("Error " + e.getMessage());
+                System.out.println("Database Error " + e.getMessage());
+                return "{\"error\": \"Unable to list items, please see server console for more info.\"}";
             }
         }
         public static void ListTimesBooking(String day, int time){
@@ -82,18 +100,28 @@ public class ScheduleController {
                 System.out.println("Error " + e.getMessage());
             }
         }
-        public static void ListAllBookings(){
+
+        @POST
+        @Path("ListAllBookings")
+        @Produces(MediaType.APPLICATION_JSON)
+        public static String ListAllBookings(){
+
+            JSONArray list = new JSONArray();
+
             try {
-                PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Schedule");
+                PreparedStatement ps = Main.db.prepareStatement("SELECT bookingID, time, day FROM Schedule");
                 ResultSet results = ps.executeQuery();
+                JSONObject item = new JSONObject();
                 while (results.next()){
-                    int bookingID = results.getInt(1);
-                    String day = results.getString(2);
-                    int time = results.getInt(3);
-                    System.out.println(bookingID + " " + day + " " + time);
+                    item.put("bookingID", results.getInt(1));
+                    item.put("time", results.getString(2));
+                    item.put("day", results.getInt(3));
+                    list.add(item);
                 }
+                return list.toString();
             }catch (Exception e){
                 System.out.println("Error " + e.getMessage());
+                return "{\"error\": \"Unable to list items, please see server console for more info.\"}";
             }
         }
 }
