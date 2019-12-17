@@ -34,6 +34,7 @@ public class Main {
         try {
             server.start();
             System.out.println("Server successfully started.");
+            //Starts Server
             server.join();
         } catch (Exception e) {
             e.printStackTrace();
