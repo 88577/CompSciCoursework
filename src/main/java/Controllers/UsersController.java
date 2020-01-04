@@ -200,6 +200,19 @@ public class UsersController{
             JSONObject item = new JSONObject();
             // Instantiates a JSON object to hold user's attributes
             try{
+                PreparedStatement ps1 = Main.db.prepareStatement("SELECT userID FROM Users");
+                ResultSet userResults = ps1.executeQuery();
+                int maxID = 0;
+                while(userResults.next()){
+                    int id = userResults.getInt(1);
+                    if(id > maxID){
+                        maxID = id;
+                    }
+                }
+                if(maxID < userID){
+                    throw new Exception("User ID does not exist");
+                }
+
                 PreparedStatement ps = Main.db.prepareStatement("SELECT firstName, lastName, password, email, admin FROM Users WHERE userID = ?");
                 ps.setInt(1, userID);
                 ResultSet results = ps.executeQuery();
