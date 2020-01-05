@@ -1,22 +1,44 @@
 package Controllers;
 
 import Server.Main;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
+import javax.annotation.PostConstruct;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+@Path("BookingsController/")
 public class BookingsController {
 
-        public static void InsertBookings(int bookingType, String description, int slots){
+        @POST
+        @Path("InsertBookings")
+        @Consumes(MediaType.MULTIPART_FORM_DATA)
+        @Produces(MediaType.APPLICATION_JSON)
+        public static String InsertBookings(
+                @FormDataParam("bookingType") Integer bookingType,
+                @FormDataParam("description") String description,
+                @FormDataParam("slots") Integer slots){
             try{
+                if(bookingType == null || description == null || slots == null){
+                    throw new Exception("One or more form data parameters are missing from the HTTP request");
+                }
+
+                System.out.println("InsertBookings");
+
                 PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Bookings (bookingType, description, slots) VALUES (?, ?, ?)");
                 ps.setInt(1, bookingType);
                 ps.setString(2, description);
                 ps.setInt(3, slots);
                 ps.executeUpdate();
-                System.out.println("Records successfully added");
+                return "{\"status\": \"OK\"}";
             }catch (Exception e){
                 System.out.println("Error" + e.getMessage());
+                return "{\"error\": \"Unable to create new item, please see server console for more info.\"}";
             }
         }
 

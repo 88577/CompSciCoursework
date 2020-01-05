@@ -7,8 +7,10 @@ import org.json.simple.JSONObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Time;
 import java.util.UUID;
 
 @Path("ScheduleController/")
@@ -64,23 +66,29 @@ public class ScheduleController {
             }
         }
 
-        @POST
+        @GET
         @Path("ListDaysBookings/{day}")
         @Produces(MediaType.APPLICATION_JSON)
 
         public static String ListDaysBookings(@PathParam("day") String day) throws Exception{
+            if(day == null){
+                throw new Exception("day is missing from HTTP request");
+            }
+            System.out.println("ScheduleController/ListDaysBookings " + day);
 
-            JSONObject item = new JSONObject();
+            JSONArray list = new JSONArray();
 
             try {
                 PreparedStatement ps = Main.db.prepareStatement("SELECT bookingID, time FROM Schedule WHERE day = ?");
                 ps.setString(1, day);
                 ResultSet results = ps.executeQuery();
                 while(results.next()){
+                    JSONObject item = new JSONObject();
                     item.put("bookingID", results.getInt(1));
                     item.put("time", results.getInt(2));
+                    list.add(item);
                 }
-                return item.toString();
+                return list.toString();
             }catch (Exception e){
                 System.out.println("Database Error " + e.getMessage());
                 return "{\"error\": \"Unable to list items, please see server console for more info.\"}";
@@ -101,27 +109,28 @@ public class ScheduleController {
             }
         }
 
-        @POST
-        @Path("ListAllBookings")
-        @Produces(MediaType.APPLICATION_JSON)
-        public static String ListAllBookings(){
+    @GET
+    @Path("ListAllBookings")
+    @Produces(MediaType.APPLICATION_JSON)
+    public static String ListAllBookings(){
+        System.out.println("ScheduleController/ListAllBookings");
+        JSONArray list = new JSONArray();
 
-            JSONArray list = new JSONArray();
+        try {
+            PreparedStatement ps = Main.db.prepareStatement("SELECT bookingID, time, day FROM Schedule");
+            ResultSet results = ps.executeQuery();
 
-            try {
-                PreparedStatement ps = Main.db.prepareStatement("SELECT bookingID, time, day FROM Schedule");
-                ResultSet results = ps.executeQuery();
+            while (results.next()){
                 JSONObject item = new JSONObject();
-                while (results.next()){
-                    item.put("bookingID", results.getInt(1));
-                    item.put("time", results.getString(2));
-                    item.put("day", results.getInt(3));
-                    list.add(item);
-                }
-                return list.toString();
-            }catch (Exception e){
-                System.out.println("Error " + e.getMessage());
-                return "{\"error\": \"Unable to list items, please see server console for more info.\"}";
+                item.put("bookingID", results.getInt(1));
+                item.put("time", results.getString(2));
+                item.put("day", results.getInt(3));
+                list.add(item);
             }
+            return list.toString();
+        }catch (Exception e){
+            System.out.println("Error " + e.getMessage());
+            return "{\"error\": \"Unable to list items, please see server console for more info.\"}";
         }
+    }
 }

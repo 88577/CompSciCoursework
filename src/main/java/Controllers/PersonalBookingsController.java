@@ -1,37 +1,59 @@
 package Controllers;
 
 import Server.Main;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.awt.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+@Path("PersonalBookingsController/")
 public class PersonalBookingsController {
-    public static void ListAllUserBookings(){
+    @GET
+    @Path("ListAllUsersBookings")
+    @Produces(MediaType.APPLICATION_JSON)
+    public static String ListAllUsersBookings(){
+        System.out.println("PersonalBookingsController/ListAllUsersBookings");
+        JSONArray list = new JSONArray();
         try {
-            PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM personalBookings");
+            PreparedStatement ps = Main.db.prepareStatement("SELECT userID, bookingID FROM personalBookings");
             ResultSet results = ps.executeQuery();
             while(results.next()){
-                int userID = results.getInt(1);
-                int bookingID = results.getInt(2);
-                System.out.println(userID + " " + bookingID);
-
+                JSONObject item = new JSONObject();
+                item.put("userID", results.getInt(1));
+                item.put("bookingID", results.getInt(2));
+                list.add(item);
             }
-
+            return list.toString();
         }catch (Exception e){
             System.out.println("Error " + e.getMessage());
+            return "{\"error\": \"Unable to list items, please see server console for more info.\"}";
         }
     }
-    public static void ListUserBookings(int userID){
+    @GET
+    @Path("ListAllUserBookings/{userID}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public static String ListAllUserBookings(@PathParam("userID") Integer userID) throws Exception{
+        if(userID == null){
+            throw new Exception("User ID is missing from HTTP request");
+        }
+        System.out.println("PersonalBookingsController/ListAllUserBookings" + userID);
+        JSONArray list = new JSONArray();
         try {
             PreparedStatement ps = Main.db.prepareStatement("SELECT bookingID FROM personalBookings WHERE userID = ?");
             ps.setInt(1, userID);
             ResultSet results = ps.executeQuery();
             while (results.next()){
-                int bookingID = results.getInt(1);
-                System.out.println(bookingID);
+                list.add(results.getInt(1));
             }
+            return list.toString();
         }catch (Exception e){
             System.out.println("Error " + e.getMessage());
+            return "{\"error\": \"Unable to get item, please see server console for more info.\"}";
         }
     }
     public static void ListBookingsUsers(int bookingID){
@@ -45,17 +67,30 @@ public class PersonalBookingsController {
             }
         }catch (Exception e){
             System.out.println("Error " + e.getMessage());
+
         }
     }
-    public static void InsertUserBooking(int userID, int bookingID){
+    @POST
+    @Path("InsertUserBookings")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static String InsertUserBooking(
+            @FormDataParam("userID") Integer userID,
+            @FormDataParam("bookingID") Integer bookingID){
         try {
+            if (userID == null || bookingID == null){
+                throw new Exception("One or more form data parameters are missing from the HTTP request");
+            }
+            System.out.println("InsertUserBookings/userID=" + userID);
             PreparedStatement ps = Main.db.prepareStatement("INSERT INTO personalBookings (userID, bookingID) values (?, ?)");
+
             ps.setInt(1, userID);
             ps.setInt(2, bookingID);
-            ps.executeUpdate();
-            System.out.println("Records successfully added");
+            ps.execute();
+            return "{\"status\": \"OK\"}";
         }catch (Exception e){
             System.out.println("Error " + e.getMessage());
+            return "{\"error\": \"Unable to create new item, please see server console for more info.\"}";
         }
 
     }
@@ -69,15 +104,28 @@ public class PersonalBookingsController {
             System.out.println("Error " + e.getMessage());
         }
     }
-    public static void DeleteUsersBooking(int userID, int bookingID){
+    @POST
+    @Path("DeleteUsersBooking")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static String DeleteUsersBooking(
+            @FormDataParam("userID") Integer userID,
+            @FormDataParam("bookingID") Integer bookingID){
         try {
+            if(userID == null){
+                throw new Exception("One or more form data parameters are missing in the HTTP request");
+            }
+            System.out.println("PersonalBookingsController/DeleteUsersBooking userID=" + userID);
+
             PreparedStatement ps = Main.db.prepareStatement("DELETE FROM personalBookings WHERE userID = ? and bookingID = ?");
             ps.setInt(1, userID);
             ps.setInt(2, bookingID);
             ps.executeUpdate();
-            System.out.println("Records successfully removed");
+
+            return "{\"status\": \"OK\"}";
         }catch (Exception e){
             System.out.println("Error " + e.getMessage());
+            return "{\"error\": \"Unable to delete item, please see server console for more info.\"}";
         }
     }
 }
