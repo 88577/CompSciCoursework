@@ -23,6 +23,7 @@ function pageLoad() {
                     for(let booking of bookings){
                         if((booking.day == j) && (booking.time == i)){
                             bookingArray[j-1] = "Booked";
+
                         }
                     }
                     if (bookingArray[j-1] == null){
