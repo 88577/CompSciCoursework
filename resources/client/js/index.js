@@ -2,21 +2,51 @@ function pageLoad() {
 
     let now = new Date();
 
-    let myHTML = '<table>'
+    let mySchedule = '<table>'
         + '<tr>'
-        + '<th>Court 1</th>'
-        + '<th>Court 2</th>'
-        + '<th>Court 3</th>';
+        + '<th style="width:100px">Timing</th>'
+        + '<th style="width:150px">Monday</th>'
+        + '<th style="width:150px">Tuesday</th>'
+        + '<th style="width:150px">Wednesday</th>'
+        + '<th style="width:150px">Thursday</th>'
+        + '<th style="width:150px">Friday</th>'
+        + '<th style="width:150px">Saturday</th>'
+        + '</tr>';
 
     fetch('/ScheduleController/ListAllBookings', {method:'get'}
     ).then(response => response.json()
     ).then(bookings => {
-        for(let i = 1; i < 19; i++) {
 
-        }
-    })
+            for (let i = 1; i < 19; i++) {
+                let bookingArray = [];
+                for(let j = 1; j < 7; j++){
+                    for(let booking of bookings){
+                        if((booking.day == j) && (booking.time == i)){
+                            bookingArray[j-1] = "Booked";
+                        }
+                    }
+                    if (bookingArray[j-1] == null){
+                        bookingArray[j-1] = "Empty";
+                    }
+                }
 
-    document.getElementById("testDiv").innerHTML = myHTML;
+
+
+                mySchedule += `<tr>` +
+                    `<td>${i}:00</td>` +
+                    `<td>${bookingArray[0]}</td>` +
+                    `<td>${bookingArray[1]}</td>` +
+                    `<td>${bookingArray[2]}</td>` +
+                    `<td>${bookingArray[3]}</td>` +
+                    `<td>${bookingArray[4]}</td>` +
+                    `<td>${bookingArray[5]}</td>` +
+                    `</tr>`;
+            }
+            mySchedule += '</table>';
+            document.getElementById("testDiv").innerHTML = mySchedule;
+    });
+
+
 
 }
 
