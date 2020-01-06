@@ -6,7 +6,7 @@
  * Released under the MIT license
  */
 ;(function (factory) {
-    var registeredInModuleLoader;
+    let registeredInModuleLoader;
     if (typeof define === 'function' && define.amd) {
         define(factory);
         registeredInModuleLoader = true;
@@ -16,8 +16,8 @@
         registeredInModuleLoader = true;
     }
     if (!registeredInModuleLoader) {
-        var OldCookies = window.Cookies;
-        var api = window.Cookies = factory();
+        let OldCookies = window.Cookies;
+        let api = window.Cookies = factory();
         api.noConflict = function () {
             window.Cookies = OldCookies;
             return api;
@@ -25,11 +25,11 @@
     }
 }(function () {
     function extend () {
-        var i = 0;
-        var result = {};
+        let i = 0;
+        let result = {};
         for (; i < arguments.length; i++) {
-            var attributes = arguments[ i ];
-            for (var key in attributes) {
+            let attributes = arguments[ i ];
+            for (let key in attributes) {
                 result[key] = attributes[key];
             }
         }
@@ -75,8 +75,8 @@
                 .replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent)
                 .replace(/[\(\)]/g, escape);
 
-            var stringifiedAttributes = '';
-            for (var attributeName in attributes) {
+            let stringifiedAttributes = '';
+            for (let attributeName in attributes) {
                 if (!attributes[attributeName]) {
                     continue;
                 }
@@ -103,22 +103,22 @@
                 return;
             }
 
-            var jar = {};
+            let jar = {};
             // To prevent the for loop in the first place assign an empty array
             // in case there are no cookies at all.
-            var cookies = document.cookie ? document.cookie.split('; ') : [];
-            var i = 0;
+            let cookies = document.cookie ? document.cookie.split('; ') : [];
+            let i = 0;
 
             for (; i < cookies.length; i++) {
-                var parts = cookies[i].split('=');
-                var cookie = parts.slice(1).join('=');
+                let parts = cookies[i].split('=');
+                let cookie = parts.slice(1).join('=');
 
                 if (!json && cookie.charAt(0) === '"') {
                     cookie = cookie.slice(1, -1);
                 }
 
                 try {
-                    var name = decode(parts[0]);
+                    let name = decode(parts[0]);
                     cookie = (converter.read || converter)(cookie, name) ||
                         decode(cookie);
 

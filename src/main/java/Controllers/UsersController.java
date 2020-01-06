@@ -115,7 +115,6 @@ public class UsersController{
         @Produces(MediaType.APPLICATION_JSON)
         public String InsertUser(
                 // Inserts a new user into the database
-                @FormDataParam("userID") Integer userID,
                 @FormDataParam("firstName") String firstName,
                 @FormDataParam("lastName") String lastName,
                 @FormDataParam("password") String password,
@@ -128,21 +127,20 @@ public class UsersController{
                         return "{\"error\": \"You don't appear to be logged in.\"}";
                     }
             try{
-                if(userID == null || firstName == null || lastName == null || password == null || email == null || admin == null){
+                if(firstName == null || lastName == null || password == null || email == null || admin == null){
                     // Check that no value is null
                     throw new Exception("One or more form data parameters are missing from the HTTP request");
                 }
-                System.out.println("InsertUser/new userID=" + userID);
+                System.out.println("InsertUser");
                 // Output to console to monitor API call
 
-                PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Users (userID, firstName, lastName, password, email, admin) values (?, ?, ?, ?, ?, ?)");
+                PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Users (firstName, lastName, password, email, admin) values (?, ?, ?, ?, ?)");
 
-                ps.setInt(1, userID);
-                ps.setString(2, firstName);
-                ps.setString(3, lastName);
-                ps.setString(4, password);
-                ps.setString(5, email);
-                ps.setBoolean(6, admin);
+                ps.setString(1, firstName);
+                ps.setString(2, lastName);
+                ps.setString(3, password);
+                ps.setString(4, email);
+                ps.setBoolean(5, admin);
                 ps.execute();
                 return "{\"status\": \"OK\"}";
 

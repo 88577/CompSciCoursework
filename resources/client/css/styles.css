@@ -28,9 +28,14 @@ table, th, td{
     margin-left: 20px;
 }
 
-#email, #password {
-    margin-left: 20px;
+#email {
+    margin-left: 65px;
     font-size: 14pt;
+}
+
+#password {
+    margin-left: 30px;
+    font-size: 14px;
 }
 
 #loginButton {
