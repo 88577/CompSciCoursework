@@ -2,12 +2,11 @@ package Controllers;
 
 import Server.Main;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import javax.annotation.PostConstruct;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,6 +41,7 @@ public class BookingsController {
             }
         }
 
+
         public static void ListAllBookings(){
             try {
                 PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Bookings");
@@ -57,22 +57,36 @@ public class BookingsController {
                 System.out.println("Error" + e.getMessage());
             }
         }
-    public static void ListBookings(int bookingID){
-        try {
-            PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Bookings WHERE bookingID = ?");
-            ps.setInt(1, bookingID);
-            ResultSet results = ps.executeQuery();
-            while (results.next()){
-                int bookingsID = results.getInt(1);
-                int bookingType = results.getInt(2);
-                String description = results.getString(3);
-                int slots = results.getInt(4);
-                System.out.println(bookingsID + " " + bookingType + " " + description + " " + slots);
-            }
-        }catch (Exception e){
-            System.out.println("Error" + e.getMessage());
+
+        @GET
+        @Path("ListBookings/{bookingID}")
+        @Produces(MediaType.APPLICATION_JSON)
+        public static String ListBookings(@PathParam("bookingID") Integer bookingID)throws Exception{
+                if(bookingID == null){
+                    throw new Exception("bookingID is missing from HTTP request");
+                }
+                System.out.println("BookingsController/ListBookings " + bookingID);
+
+                JSONObject item = new JSONObject();
+
+                try {
+                    PreparedStatement ps = Main.db.prepareStatement("SELECT bookingID, bookingType, description, slots FROM Bookings WHERE bookingID = ?");
+                    ps.setInt(1, bookingID);
+                    ResultSet results = ps.executeQuery();
+                    while (results.next()){
+
+                        item.put("bookingsID", results.getInt(1));
+                        item.put("bookingTyoe", results.getInt(2));
+                        item.put("description", results.getString(3));
+                        item.put("slots", results.getInt(4));
+
+                    }
+                    return item.toString();
+                }catch (Exception e){
+                    System.out.println("Database Error " + e.getMessage());
+                    return "{\"error\": \"Unable to list items, please see server console for more info.\"}";
+                }
         }
-    }
         public static void DeleteBookings(int bookingID){
             try {
                 PreparedStatement ps = Main.db.prepareStatement("DELETE FROM Bookings WHERE bookingID = ?");
