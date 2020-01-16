@@ -67,6 +67,7 @@ function pageLoad() {
                 button.addEventListener("click", book);
             }
             // Prepares the event handlers for each Book button
+            checkLogin();
     });
 }
 
@@ -99,7 +100,7 @@ function book(event){
 }
 
 function bookBooking() {
-
+    fetch('UserController/ListUser' + id)
 }
 
 function checkLogin() {
@@ -108,32 +109,17 @@ function checkLogin() {
 
     let logInHTML = '';
 
+    let id = Cookies.get("id");
+    console.log(id);
     if (email === undefined) {
 
-        let editButtons = document.getElementsByClassName("editButton");
-        for (let button of editButtons) {
-            button.style.visibility = "hidden";
-        }
-
-        let deleteButtons = document.getElementsByClassName("deleteButton");
-        for (let button of deleteButtons) {
-            button.style.visibility = "hidden";
-        }
 
         logInHTML = "Not logged in. <a href='/client/login.html'>Log in</a>";
     } else {
 
-        let editButtons = document.getElementsByClassName("editButton");
-        for (let button of editButtons) {
-            button.style.visibility = "visible";
-        }
 
-        let deleteButtons = document.getElementsByClassName("deleteButton");
-        for (let button of deleteButtons) {
-            button.style.visibility = "visible";
-        }
 
-        logInHTML = "Logged in as " + username + ". <a href='/client/login.html?logout'>Log out</a>";
+        logInHTML = "Logged in as " + email + ". <a href='/client/login.html?logout'>Log out</a>";
 
     }
 

@@ -25,6 +25,7 @@ function login(event) {
         } else {
             Cookies.set("email", responseData.email);
             Cookies.set("token", responseData.token);
+            Cookies.set("id", responseData.userID);
 
             window.location.href = '/client/index.html';
         }
