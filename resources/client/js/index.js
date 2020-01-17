@@ -22,6 +22,7 @@ function pageLoad() {
             for (let i = 9; i < 19; i++) {
                 // Repeats for each hour of the day
                 let bookingArray = [];
+                // yeee
                 let bookingIDArray = [];
                 let bookingColourArray = [];
                 for(let j = 1; j < 7; j++){
