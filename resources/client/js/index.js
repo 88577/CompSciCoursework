@@ -50,12 +50,12 @@ function pageLoad() {
 
                 mySchedule += `<tr>` +
                     `<td>${i}:00</td>` +
-                    `<td style="background-color: ${bookingColourArray[0]}"><button class="scheduleButton" data-id="${bookingIDArray[0]}">${bookingArray[0]}</button></td>` +
-                    `<td style="background-color: ${bookingColourArray[1]}"><button class="scheduleButton" data-id="${bookingIDArray[1]}">${bookingArray[1]}</button></td>` +
-                    `<td style="background-color: ${bookingColourArray[2]}"><button class="scheduleButton" data-id="${bookingIDArray[2]}">${bookingArray[2]}</button></td>` +
-                    `<td style="background-color: ${bookingColourArray[3]}"><button class="scheduleButton" data-id="${bookingIDArray[3]}">${bookingArray[3]}</button></td>` +
-                    `<td style="background-color: ${bookingColourArray[4]}"><button class="scheduleButton" data-id="${bookingIDArray[4]}">${bookingArray[4]}</button></td>` +
-                    `<td style="background-color: ${bookingColourArray[5]}"><button class="scheduleButton" data-id="${bookingIDArray[5]}">${bookingArray[5]}</button></td>` +
+                    `<td style="background-color: ${bookingColourArray[0]}"><button class="scheduleButton" data-id="${bookingIDArray[0]}" time-id="${i}:00 - ${i+1}:00">${bookingArray[0]}</button></td>` +
+                    `<td style="background-color: ${bookingColourArray[1]}"><button class="scheduleButton" data-id="${bookingIDArray[1]}" time-id="${i}:00 - ${i+1}:00">${bookingArray[1]}</button></td>` +
+                    `<td style="background-color: ${bookingColourArray[2]}"><button class="scheduleButton" data-id="${bookingIDArray[2]}" time-id="${i}:00 - ${i+1}:00">${bookingArray[2]}</button></td>` +
+                    `<td style="background-color: ${bookingColourArray[3]}"><button class="scheduleButton" data-id="${bookingIDArray[3]}" time-id="${i}:00 - ${i+1}:00">${bookingArray[3]}</button></td>` +
+                    `<td style="background-color: ${bookingColourArray[4]}"><button class="scheduleButton" data-id="${bookingIDArray[4]}" time-id="${i}:00 - ${i+1}:00">${bookingArray[4]}</button></td>` +
+                    `<td style="background-color: ${bookingColourArray[5]}"><button class="scheduleButton" data-id="${bookingIDArray[5]}" time-id="${i}:00 - ${i+1}:00">${bookingArray[5]}</button></td>` +
                     `</tr>`;
                 // Populates the table for a timing with each booking
             }
@@ -72,33 +72,80 @@ function pageLoad() {
     checkLogin();
 }
 
-function book(event){
+function book(event) {
     const id = event.target.getAttribute("data-id");
+    const time = event.target.getAttribute("time-id");
     // Creates a variable for the specific bookingID
-    if(id == -1){
+    document.getElementById("time").innerHTML = time;
+    if (id == -1) {
         // If there is no bookingID
         document.getElementById("description").innerHTML = 'No Current Booking';
-        document.getElementById("bookDiv").style.display = 'block';
+        document.getElementById("slots").innerHTML = "";
+        document.getElementById("bookingDiv").style.display = 'block';
 
-    }
-    else{
+    } else {
         // If there is a bookingID
         fetch('/BookingsController/ListBookings/' + id, {method: 'get'}
         ).then(response => response.json()
         ).then(booking => {
-            // Fetches the booking information for that bookingID
-            if(booking.hasOwnProperty('error')){
-                alert(booking.error);
-                // Error checking
-            } else{
-                document.getElementById("description").innerHTML = booking.description;
-                document.getElementById("bookingDiv").style.display = 'block';
-            }
+            let count = 0;
+            fetch("/PersonalBookingsController/ListAllUsersBookings", {method: 'get'}
+            ).then(response => response.json()
+            ).then(users => {
+
+                if (booking.hasOwnProperty('error')) {
+                    alert(booking.error);
+                    // Error checking
+                } else {
+                    document.getElementById("description").innerHTML = booking.description;
+                    document.getElementById("bookingDiv").style.display = 'block';
+
+
+                for (let user in users) {
+                    if (booking.bookingID == user.bookingID) {
+                        count = count + 1;
+                        console.log(count);
+                    }
+                }
+                if (booking.bookingType === 1) {
+                    // If it is an event (unlimited bookings)
+                    document.getElementById("description").innerHTML = booking.description;
+                    document.getElementById("slots").innerHTML = "No Limit";
+                    document.getElementById("bookButtonDiv").style.display = 'block';
+                }
+                if (booking.bookingType === 2) {
+                    // If it is a course (limited bookings)
+                    console.log("yee");
+                    if (booking.slots - count <= 0) {
+                        document.getElementById("description").innerHTML = booking.description;
+                        document.getElementById("slots").innerHTML = "Fully Booked";
+                        document.getElementById("bookButtonDiv").style.display = 'none';
+                    } else {
+                        let slotNo = (booking.slots - count);
+                        console.log(slotNo);
+                        document.getElementById("description").innerHTML = booking.description;
+                        document.getElementById("bookButtonDiv").style.display = 'block';
+                        document.getElementById("slots").innerHTML = slotNo + " Slots left";
+
+                    }
+                }
+                if (booking.bookingType === 3) {
+                    // If it is freeplay (fully booked)
+                    document.getElementById("description").innerHTML = booking.description;
+                    document.getElementById("slots").innerHTML = "Fully Booked";
+                    document.getElementById("bookButtonDiv").style.display = 'none';
+                }
+                }
+                // Fetches the booking information for that bookingID
+
+
+            });
+            document.getElementById("bookButton").addEventListener("click", bookBooking);
+            // Prepares event handler for button
         });
-        document.getElementById("bookButton").addEventListener("click", bookBooking);
-        // Prepares event handler for button
     }
 }
+
 
 function bookBooking() {
 

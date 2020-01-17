@@ -76,7 +76,7 @@ public class BookingsController {
                     while (results.next()){
 
                         item.put("bookingsID", results.getInt(1));
-                        item.put("bookingTyoe", results.getInt(2));
+                        item.put("bookingType", results.getInt(2));
                         item.put("description", results.getString(3));
                         item.put("slots", results.getInt(4));
 
