@@ -68,6 +68,7 @@ function pageLoad() {
             }
             // Prepares the event handlers for each Book button
     });
+    checkLogin();
 }
 
 function book(event){
@@ -105,7 +106,7 @@ function bookBooking() {
 function checkLogin() {
 
     let email = Cookies.get("email");
-
+    let name = Cookies.get("firstName");
     let logInHTML = '';
 
     if (email === undefined) {
@@ -133,7 +134,7 @@ function checkLogin() {
             button.style.visibility = "visible";
         }
 
-        logInHTML = "Logged in as " + username + ". <a href='/client/login.html?logout'>Log out</a>";
+        logInHTML = "Logged in as " + name + ". <a href='/client/login.html?logout'>Log out</a>";
 
     }
 

@@ -24,12 +24,14 @@ public class UsersController{
 
             System.out.println("UserController/login");
 
-            PreparedStatement ps1 = Main.db.prepareStatement("SELECT password FROM Users WHERE email = ?");
+            PreparedStatement ps1 = Main.db.prepareStatement("SELECT password, firstName, userID FROM Users WHERE email = ?");
             ps1.setString(1, email);
             ResultSet loginResults = ps1.executeQuery();
             if (loginResults.next()) {
 
                 String correctPassword = loginResults.getString(1);
+                String name = loginResults.getString(2);
+                Integer id = loginResults.getInt(3);
                 if (password.equals(correctPassword)) {
 
                     String token = UUID.randomUUID().toString();
@@ -42,6 +44,8 @@ public class UsersController{
                     JSONObject userDetails = new JSONObject();
                     userDetails.put("email", email);
                     userDetails.put("token", token);
+                    userDetails.put("firstName", name);
+                    userDetails.put("userID", id);
                     return userDetails.toString();
 
                 } else {
